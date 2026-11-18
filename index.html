@@ -5,173 +5,328 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Room Energy Monitoring</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --latar: #f4f6f8;
+      --latar: #e8e6f5;
+      --bingkai: #f8f8fd;
       --kartu: #ffffff;
-      --garis: #dde2e8;
-      --teks: #17202a;
-      --teks-redup: #5f6b7a;
-      --aksen: #1f6feb;
-      --hijau: #1a7f4b;
-      --hijau-latar: #dcf3e6;
-      --kuning: #8a5a00;
-      --kuning-latar: #fdf0cf;
-      --merah: #b42318;
-      --merah-latar: #fde4e1;
-      --abu-latar: #e9edf1;
-      --garis-ruang-1: #1f6feb;
-      --garis-ruang-2: #e8710a;
+      --garis: #ebeaf4;
+      --teks: #16162b;
+      --redup: #7a7994;
+      --ungu: #5b4cf0;
+      --ungu-tua: #4535d4;
+      --ungu-muda: #eeebff;
+      --navy: #1b1c35;
+      --navy-2: #272850;
+      --hijau: #12a572;
+      --hijau-muda: #dff6ec;
+      --kuning: #b87600;
+      --kuning-muda: #fff1d1;
+      --merah: #d9363e;
+      --merah-muda: #fde6e7;
+      --teal: #12b5a6;
+      --bayangan: 0 1px 2px rgba(27, 28, 53, 0.04), 0 8px 24px rgba(27, 28, 53, 0.06);
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --latar: #0f141a;
-        --kartu: #18202a;
-        --garis: #2b3643;
-        --teks: #e8edf2;
-        --teks-redup: #93a0af;
-        --aksen: #5b9dff;
-        --hijau: #5fd394;
-        --hijau-latar: #12301f;
-        --kuning: #f2c14e;
-        --kuning-latar: #3a2d0c;
-        --merah: #ff8a80;
-        --merah-latar: #3d1713;
-        --abu-latar: #232d39;
-        --garis-ruang-1: #5b9dff;
-        --garis-ruang-2: #f59a4a;
-      }
-    }
-
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; }
 
     body {
-      margin: 0;
-      background: var(--latar);
+      font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
       color: var(--teks);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--latar);
+      background-image: linear-gradient(180deg, #f1f0fb 0%, #e3e1f4 100%);
+      min-height: 100vh;
       line-height: 1.45;
     }
 
-    .halaman {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 20px 16px 40px;
+    button { font-family: inherit; }
+
+    .app {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 24px;
+      background: var(--bingkai);
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(60, 50, 140, 0.12);
     }
 
-    header {
+    /* ---------- Topbar ---------- */
+    .topbar {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
     }
 
-    h1 { font-size: 1.3rem; margin: 0; }
-    .sub { color: var(--teks-redup); font-size: 0.85rem; margin: 2px 0 0; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-logo {
+      width: 38px; height: 38px;
+      border-radius: 12px;
+      background: var(--ungu);
+      display: grid;
+      place-items: center;
+    }
+    .brand b { display: block; font-size: 16px; line-height: 1.1; }
+    .brand small { display: block; color: var(--redup); font-size: 11px; }
 
-    .lencana-baris { display: flex; flex-wrap: wrap; gap: 8px; }
+    .nav-pill {
+      display: flex;
+      gap: 4px;
+      padding: 6px;
+      background: var(--navy);
+      border-radius: 999px;
+      overflow-x: auto;
+    }
+    .nav-pill a {
+      color: rgba(255, 255, 255, 0.72);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 18px;
+      border-radius: 999px;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-pill a:hover { color: #fff; }
+    .nav-pill a[aria-current="true"] { background: var(--ungu); color: #fff; }
 
-    .lencana {
+    .top-kanan { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    .chip {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
+      gap: 8px;
+      padding: 9px 14px;
       border-radius: 999px;
-      font-size: 0.8rem;
+      background: var(--kartu);
+      border: 1px solid var(--garis);
+      font-size: 12px;
       font-weight: 600;
-      background: var(--abu-latar);
-      color: var(--teks-redup);
+      white-space: nowrap;
     }
-    .lencana::before {
-      content: "";
+    .dot {
       width: 8px; height: 8px;
       border-radius: 50%;
-      background: currentColor;
+      background: var(--redup);
     }
-    .lencana.baik   { background: var(--hijau-latar);  color: var(--hijau); }
-    .lencana.waspada{ background: var(--kuning-latar); color: var(--kuning); }
-    .lencana.buruk  { background: var(--merah-latar);  color: var(--merah); }
+    .dot.ok { background: var(--hijau); box-shadow: 0 0 0 0 rgba(18, 165, 114, 0.6); animation: denyut 2s infinite; }
+    .dot.bad { background: var(--merah); }
+    .dot.wait { background: #f0a020; }
+    @keyframes denyut {
+      70% { box-shadow: 0 0 0 8px rgba(18, 165, 114, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(18, 165, 114, 0); }
+    }
 
-    .grid {
+    /* ---------- Judul ---------- */
+    .judul-baris {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+    h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+    .sub { color: var(--redup); font-size: 14px; margin-top: 6px; }
+    .update-info { color: var(--redup); font-size: 13px; font-weight: 500; }
+    .update-info.usang { color: var(--kuning); }
+
+    /* ---------- Kartu statistik ---------- */
+    .stat-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+      scroll-margin-top: 16px;
     }
 
     .kartu {
       background: var(--kartu);
       border: 1px solid var(--garis);
-      border-radius: 12px;
-      padding: 16px;
-    }
-    .kartu.lebar { grid-column: 1 / -1; }
-
-    .kartu h2 {
-      font-size: 0.8rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--teks-redup);
-      margin: 0 0 12px;
-    }
-
-    .angka-besar { font-size: 2.1rem; font-weight: 700; line-height: 1.1; }
-    .satuan { font-size: 0.95rem; font-weight: 500; color: var(--teks-redup); margin-left: 4px; }
-
-    .baris {
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--bayangan);
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      min-height: 210px;
+    }
+
+    .kartu-judul {
+      display: flex;
       align-items: center;
-      padding: 8px 0;
-      border-top: 1px solid var(--garis);
-      font-size: 0.9rem;
-    }
-    .baris:first-of-type { border-top: none; }
-    .baris .label { color: var(--teks-redup); }
-
-    .gelang {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 999px;
-      font-size: 0.8rem;
+      justify-content: space-between;
+      font-size: 13px;
       font-weight: 600;
-      background: var(--abu-latar);
-      color: var(--teks-redup);
     }
-    .gelang.normal { background: var(--hijau-latar);  color: var(--hijau); }
-    .gelang.ringan { background: var(--kuning-latar); color: var(--kuning); }
-    .gelang.parah  { background: var(--merah-latar);  color: var(--merah); }
+    .ikon-bulat {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      background: var(--ungu-muda);
+      color: var(--ungu);
+    }
 
-    .lingkungan { display: flex; gap: 32px; flex-wrap: wrap; }
-    .lingkungan .angka-besar { font-size: 1.8rem; }
-    .lingkungan .keterangan { color: var(--teks-redup); font-size: 0.85rem; }
+    .angka {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-top: 14px;
+      font-variant-numeric: tabular-nums;
+    }
+    .angka small { font-size: 15px; font-weight: 600; color: var(--redup); margin-left: 4px; }
 
-    .beban-grid {
+    .delta { font-size: 12px; font-weight: 600; margin-top: 4px; min-height: 18px; color: var(--redup); }
+    .delta.naik { color: var(--merah); }
+    .delta.turun { color: var(--hijau); }
+
+    .spark { margin-top: auto; padding-top: 8px; }
+    .spark svg { display: block; width: 100%; height: 64px; }
+
+    .batang-baris { margin-top: 10px; }
+    .batang-baris .label-baris { display: flex; justify-content: space-between; font-size: 12px; color: var(--redup); margin-bottom: 5px; font-weight: 500; }
+    .batang-jalur { height: 10px; border-radius: 10px; background: var(--ungu-muda); overflow: hidden; }
+    .batang-isi { height: 100%; border-radius: 10px; transition: width 0.5s; }
+
+    .mini-baris {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-top: 1px solid var(--garis);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .mini-baris:first-of-type { margin-top: 10px; }
+    .mini-baris .kecil { display: block; font-size: 11px; color: var(--redup); font-weight: 500; }
+
+    /* ---------- Tag status ---------- */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #efeef7;
+      color: var(--redup);
+      white-space: nowrap;
+    }
+    .tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .tag.ok { background: var(--hijau-muda); color: var(--hijau); }
+    .tag.warn { background: var(--kuning-muda); color: var(--kuning); }
+    .tag.bad { background: var(--merah-muda); color: var(--merah); }
+
+    /* ---------- Panel gelap ---------- */
+    .panel-gelap {
+      background: var(--navy);
+      border-radius: 30px;
+      padding: 22px;
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+      scroll-margin-top: 16px;
+    }
+
+    .daftar-judul {
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      margin: 4px 4px 16px;
+    }
+
+    .area-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 18px;
+      background: var(--navy-2);
+      color: #fff;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.15s;
+    }
+    .area-item:hover { transform: translateY(-1px); }
+    .area-item[aria-pressed="true"] { background: var(--ungu); }
+    .area-item:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+    .avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14);
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .area-info { flex: 1; min-width: 0; }
+    .area-nama { font-size: 14px; font-weight: 700; }
+    .area-sub { font-size: 12px; color: rgba(255, 255, 255, 0.6); }
+    .area-kanan { text-align: right; }
+    .area-nilai { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .area-item .tag { margin-bottom: 4px; }
+
+    .panel-detail {
+      background: linear-gradient(145deg, #6558e8 0%, #4f43c9 100%);
+      border-radius: 24px;
+      padding: 24px;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-atas {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+    .detail-label { font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-bottom: 6px; }
+    .detail-judul { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .detail-judul .tag { background: rgba(255, 255, 255, 0.2); color: #fff; }
+    .detail-sensor { font-size: 15px; font-weight: 700; }
+
+    .tile-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      gap: 12px;
     }
-
-    .beban {
+    .tile {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 16px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 12px;
-      border: 1px solid var(--garis);
-      border-radius: 10px;
+      flex-direction: column;
+      gap: 4px;
+      min-height: 112px;
     }
-    .beban .nama { font-weight: 600; font-size: 0.95rem; }
-    .beban .ket  { font-size: 0.78rem; color: var(--teks-redup); }
+    .tile-label { font-size: 12px; color: rgba(255, 255, 255, 0.75); font-weight: 600; }
+    .tile-nilai { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-top: auto; font-variant-numeric: tabular-nums; }
+    .tile-nilai small { font-size: 13px; font-weight: 600; opacity: 0.75; margin-left: 4px; }
+    .tile-sub { font-size: 11px; color: rgba(255, 255, 255, 0.65); }
+    .tile-baris { display: flex; align-items: center; justify-content: space-between; margin-top: auto; gap: 10px; }
 
     .saklar {
       position: relative;
-      width: 48px; height: 28px;
+      width: 50px; height: 28px;
       border: none;
       border-radius: 999px;
-      background: var(--garis);
+      background: rgba(255, 255, 255, 0.3);
       cursor: pointer;
       flex-shrink: 0;
       transition: background 0.15s;
@@ -182,107 +337,222 @@
       top: 3px; left: 3px;
       width: 22px; height: 22px;
       border-radius: 50%;
-      background: #ffffff;
+      background: #fff;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .saklar[aria-checked="true"] { background: #fff; }
+    .saklar[aria-checked="true"]::after { transform: translateX(22px); background: var(--ungu); }
+    .saklar:disabled { opacity: 0.4; cursor: not-allowed; }
+    .saklar:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+    .detail-bawah {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.22);
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .bawah-item .detail-label { margin-bottom: 2px; }
+    .bawah-nilai { font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .bawah-spasi { flex: 1; }
+
+    .btn-putih {
+      border: none;
+      background: #fff;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px 22px;
+      border-radius: 999px;
+      cursor: pointer;
       transition: transform 0.15s;
     }
-    .saklar[aria-checked="true"] { background: var(--aksen); }
-    .saklar[aria-checked="true"]::after { transform: translateX(20px); }
-    .saklar:disabled { opacity: 0.45; cursor: not-allowed; }
-    .saklar:focus-visible { outline: 2px solid var(--aksen); outline-offset: 2px; }
+    .btn-putih:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn-putih:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-putih:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
-    .peringatan {
-      margin: 10px 0 0;
-      font-size: 0.82rem;
-      color: var(--kuning);
+    .catatan {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #ffe8a8;
+      min-height: 16px;
     }
 
-    canvas {
-      width: 100%;
-      height: 220px;
-      display: block;
-    }
+    body.hanya-lihat .saklar,
+    body.hanya-lihat .btn-putih { display: none; }
 
-    .legenda { display: flex; gap: 16px; font-size: 0.82rem; color: var(--teks-redup); margin-top: 8px; }
-    .legenda span::before {
-      content: "";
-      display: inline-block;
-      width: 12px; height: 3px;
-      margin-right: 6px;
-      vertical-align: middle;
-      background: var(--warna);
+    /* ---------- Grafik ---------- */
+    .grafik-kartu {
+      background: var(--kartu);
+      border: 1px solid var(--garis);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--bayangan);
+      scroll-margin-top: 16px;
     }
+    .grafik-kepala { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .grafik-kepala h2 { font-size: 16px; font-weight: 700; }
+    .legenda { display: flex; gap: 18px; font-size: 12px; font-weight: 600; color: var(--redup); }
+    .legenda span::before { content: ""; display: inline-block; width: 14px; height: 4px; border-radius: 4px; margin-right: 7px; vertical-align: middle; background: var(--warna); }
+    canvas { width: 100%; height: 240px; display: block; }
 
-    @media (max-width: 640px) {
-      .grid, .beban-grid { grid-template-columns: 1fr; }
+    footer { text-align: center; color: var(--redup); font-size: 12px; margin-top: 20px; }
+
+    /* ---------- Responsif ---------- */
+    @media (max-width: 1000px) {
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .panel-gelap { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .app { margin: 0; padding: 16px; border-radius: 0; }
+      .stat-grid { grid-template-columns: 1fr; }
+      .detail-atas { grid-template-columns: 1fr; }
+      .nav-pill { width: 100%; }
+      h1 { font-size: 27px; }
     }
   </style>
 </head>
 
 <body>
-  <div class="halaman">
+  <div class="app">
 
-    <header>
-      <div>
-        <h1>Room Energy Monitoring</h1>
-        <p class="sub">Dashboard realtime via MQTT &middot; <span id="teks-update">belum ada data</span></p>
+    <!-- ===================== TOPBAR ===================== -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
+        </div>
+        <div>
+          <b>Room Energy</b>
+          <small>Smart building monitoring</small>
+        </div>
       </div>
-      <div class="lencana-baris">
-        <span class="lencana" id="lencana-broker">Broker: menghubungkan</span>
-        <span class="lencana" id="lencana-perangkat">ESP32: menunggu</span>
+
+      <nav class="nav-pill" id="nav" aria-label="Navigasi bagian">
+        <a href="#bagian-ringkasan" aria-current="true">Ringkasan</a>
+        <a href="#bagian-area">Area &amp; Kontrol</a>
+        <a href="#bagian-grafik">Grafik</a>
+      </nav>
+
+      <div class="top-kanan">
+        <span class="chip"><span class="dot wait" id="dot-broker"></span><span id="teks-broker">Broker: menyambung</span></span>
+        <span class="chip"><span class="dot wait" id="dot-esp"></span><span id="teks-esp">ESP32: menunggu</span></span>
+        <span class="chip" id="jam">-</span>
       </div>
     </header>
 
-    <main class="grid">
+    <!-- ===================== JUDUL ===================== -->
+    <div class="judul-baris">
+      <div>
+        <h1>Monitoring</h1>
+        <p class="sub">Pantau daya, okupansi, dan kontrol beban ruangan secara realtime.</p>
+      </div>
+      <div class="update-info" id="teks-update">Belum ada data</div>
+    </div>
 
-      <section class="kartu">
-        <h2>Ruang 1</h2>
-        <div><span class="angka-besar" id="daya1">-</span><span class="satuan">W</span></div>
-        <div class="baris"><span class="label">Energi</span><span><b id="energi1">-</b> Wh</span></div>
-        <div class="baris"><span class="label">Okupansi</span><span class="gelang" id="okupansi1">-</span></div>
-        <div class="baris"><span class="label">Status</span><span class="gelang" id="status1">-</span></div>
-      </section>
+    <!-- ===================== KARTU STATISTIK ===================== -->
+    <section class="stat-grid" id="bagian-ringkasan" aria-label="Ringkasan">
 
-      <section class="kartu">
-        <h2>Ruang 2</h2>
-        <div><span class="angka-besar" id="daya2">-</span><span class="satuan">W</span></div>
-        <div class="baris"><span class="label">Energi</span><span><b id="energi2">-</b> Wh</span></div>
-        <div class="baris"><span class="label">Okupansi</span><span class="gelang" id="okupansi2">-</span></div>
-        <div class="baris"><span class="label">Status</span><span class="gelang" id="status2">-</span></div>
-      </section>
+      <article class="kartu">
+        <div class="kartu-judul"><span>Daya total</span><span class="ikon-bulat" aria-hidden="true">&#9889;</span></div>
+        <div class="angka"><span id="total-daya">-</span><small>W</small></div>
+        <div class="delta" id="total-delta"></div>
+        <div class="spark" id="spark-daya"></div>
+      </article>
 
-      <section class="kartu lebar">
-        <h2>Koridor</h2>
-        <div class="lingkungan">
+      <article class="kartu">
+        <div class="kartu-judul"><span>Energi terpakai</span><span class="ikon-bulat" aria-hidden="true">&#9719;</span></div>
+        <div class="angka"><span id="total-energi">-</span><small>Wh</small></div>
+        <div class="batang-baris">
+          <div class="label-baris"><span>Ruang 1</span><span id="energi-teks-1">-</span></div>
+          <div class="batang-jalur"><div class="batang-isi" id="batang-1" style="width:0%; background: var(--ungu)"></div></div>
+        </div>
+        <div class="batang-baris">
+          <div class="label-baris"><span>Ruang 2</span><span id="energi-teks-2">-</span></div>
+          <div class="batang-jalur"><div class="batang-isi" id="batang-2" style="width:0%; background: var(--teal)"></div></div>
+        </div>
+      </article>
+
+      <article class="kartu">
+        <div class="kartu-judul"><span>Suhu koridor</span><span class="ikon-bulat" aria-hidden="true">&deg;</span></div>
+        <div class="angka"><span id="stat-suhu">-</span><small>&deg;C</small></div>
+        <div class="delta" id="stat-lembap">Kelembapan -</div>
+        <div class="spark" id="spark-suhu"></div>
+      </article>
+
+      <article class="kartu">
+        <div class="kartu-judul"><span>Status ruangan</span><span class="ikon-bulat" aria-hidden="true">&#10003;</span></div>
+        <div class="mini-baris">
+          <span>Ruang 1<span class="kecil" id="mini-okupansi-1">-</span></span>
+          <span class="tag" id="mini-status-1">-</span>
+        </div>
+        <div class="mini-baris">
+          <span>Ruang 2<span class="kecil" id="mini-okupansi-2">-</span></span>
+          <span class="tag" id="mini-status-2">-</span>
+        </div>
+        <div class="mini-baris">
+          <span>Uptime ESP32<span class="kecil">Sejak menyala</span></span>
+          <span id="mini-uptime">-</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===================== PANEL AREA ===================== -->
+    <section class="panel-gelap" id="bagian-area" aria-label="Area dan kontrol beban">
+
+      <div>
+        <div class="daftar-judul">Daftar area</div>
+        <div id="daftar-area"></div>
+      </div>
+
+      <div class="panel-detail">
+        <div class="detail-atas">
           <div>
-            <div><span class="angka-besar" id="suhu">-</span><span class="satuan">&deg;C</span></div>
-            <div class="keterangan">Suhu</div>
+            <div class="detail-label">Detail area</div>
+            <div class="detail-judul"><span id="detail-nama">-</span><span class="tag" id="detail-tag">-</span></div>
           </div>
           <div>
-            <div><span class="angka-besar" id="kelembapan">-</span><span class="satuan">%</span></div>
-            <div class="keterangan">Kelembapan</div>
+            <div class="detail-label">Sensor</div>
+            <div class="detail-sensor" id="detail-sensor">-</div>
           </div>
         </div>
-      </section>
 
-      <section class="kartu lebar">
-        <h2>Kontrol beban</h2>
-        <div class="beban-grid" id="daftar-beban"></div>
-        <p class="peringatan" id="peringatan-kontrol" hidden></p>
-      </section>
+        <div class="tile-grid" id="tile-grid"></div>
 
-      <section class="kartu lebar">
-        <h2>Daya 5 menit terakhir</h2>
-        <canvas id="grafik" aria-label="Grafik daya Ruang 1 dan Ruang 2"></canvas>
+        <div class="detail-bawah">
+          <div class="bawah-item">
+            <div class="detail-label" id="bawah-label-1">-</div>
+            <div class="bawah-nilai" id="bawah-nilai-1">-</div>
+          </div>
+          <div class="bawah-item">
+            <div class="detail-label" id="bawah-label-2">-</div>
+            <div class="bawah-nilai" id="bawah-nilai-2">-</div>
+          </div>
+          <div class="bawah-spasi"></div>
+          <button class="btn-putih" id="btn-matikan" type="button">Matikan semua beban</button>
+        </div>
+        <div class="catatan" id="catatan" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ===================== GRAFIK ===================== -->
+    <section class="grafik-kartu" id="bagian-grafik" aria-label="Grafik daya">
+      <div class="grafik-kepala">
+        <h2>Tren daya 5 menit terakhir</h2>
         <div class="legenda">
-          <span style="--warna: var(--garis-ruang-1)">Ruang 1</span>
-          <span style="--warna: var(--garis-ruang-2)">Ruang 2</span>
+          <span style="--warna: var(--ungu)">Ruang 1</span>
+          <span style="--warna: var(--teal)">Ruang 2</span>
         </div>
-      </section>
+      </div>
+      <canvas id="grafik" aria-label="Grafik daya Ruang 1 dan Ruang 2"></canvas>
+    </section>
 
-    </main>
+    <footer>Data realtime dari ESP32 lewat MQTT (HiveMQ) &middot; WIB (UTC+7)</footer>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mqtt@5.3.4/dist/mqtt.min.js"></script>
   <script>
     // =======================================================================
     // KONFIGURASI
@@ -291,289 +561,594 @@
     const URL_BROKER = "wss://broker.hivemq.com:8884/mqtt";
     const TOPIK_DASAR = "tubes16/roomenergy-x7k2";
 
+    // Ubah ke false untuk website publik yang hanya boleh melihat data.
+    // Saklar dan tombol kontrol akan disembunyikan, dan perintah tidak dikirim.
+    const BOLEH_KONTROL = true;
+
     const TOPIK_TELEMETRI = TOPIK_DASAR + "/telemetri";
     const TOPIK_STATUS = TOPIK_DASAR + "/status";
     const TOPIK_PERINTAH = TOPIK_DASAR + "/cmd/";
 
-    // Urutan harus sama dengan relay 1..4 di firmware
-    const DAFTAR_BEBAN = [
-      { nama: "Lampu Ruang 1", keterangan: "Relay 1" },
-      { nama: "Kipas Koridor", keterangan: "Relay 2" },
-      { nama: "Kipas Ruang 2", keterangan: "Relay 3" },
-      { nama: "Lampu Ruang 2", keterangan: "Relay 4" }
-    ];
-
     const JUMLAH_TITIK_GRAFIK = 60;      // 60 titik x 5 detik = 5 menit
-    const BATAS_DATA_USANG_DETIK = 20;   // lebih dari ini dianggap tidak update
+    const BATAS_DATA_USANG_DETIK = 20;
+    const TZ = "Asia/Jakarta";
+
+    // Urutan sama dengan relay 1..4 di firmware
+    const NAMA_BEBAN = ["Lampu Ruang 1", "Kipas Koridor", "Kipas Ruang 2", "Lampu Ruang 2"];
+
+    const WARNA_UNGU = "#5b4cf0";
+    const WARNA_TEAL = "#12b5a6";
+
+    // Daftar area di panel gelap. relayBeban = nomor indeks relay di area itu.
+    const DAFTAR_AREA = [
+      { id: "ruang1",  nama: "Ruang 1", inisial: "R1", sensor: "INA219 0x40 + PIR 1" },
+      { id: "ruang2",  nama: "Ruang 2", inisial: "R2", sensor: "INA219 0x41 + PIR 2" },
+      { id: "koridor", nama: "Koridor", inisial: "K",  sensor: "DHT11" }
+    ];
 
     // =======================================================================
     // STATE
     // =======================================================================
     let brokerTersambung = false;
     let perangkatOnline = false;
+    let telemetri = null;               // data terakhir dari ESP32
+    let dataDariRetained = false;       // true kalau data hanya salinan lama dari broker
     let waktuTelemetriTerakhir = null;
+    let jumlahPesan = 0;
     let statusRelay = [false, false, false, false];
-    let riwayatDaya = [];   // setiap item: { daya1, daya2 }
+    let riwayat = [];                   // { daya1, daya2, total, suhu }
+    let totalSebelumnya = null;
+    let areaTerpilih = "ruang1";
+    let pesanKontrol = "";
+    let waktuPesanKontrol = 0;
+    let klien = null;
 
     // =======================================================================
-    // ELEMEN HTML
+    // HELPER
     // =======================================================================
-    const elemen = {
-      lencanaBroker: document.getElementById("lencana-broker"),
-      lencanaPerangkat: document.getElementById("lencana-perangkat"),
-      teksUpdate: document.getElementById("teks-update"),
-      daftarBeban: document.getElementById("daftar-beban"),
-      peringatanKontrol: document.getElementById("peringatan-kontrol"),
-      grafik: document.getElementById("grafik")
-    };
+    function $(id) { return document.getElementById(id); }
 
-    const saklarRelay = [];
+    function angkaAtauNull(nilai) {
+      return (typeof nilai === "number" && isFinite(nilai)) ? nilai : null;
+    }
 
-    // =======================================================================
-    // TAMPILAN
-    // =======================================================================
     function formatAngka(nilai, desimal) {
-      if (nilai === null || nilai === undefined || Number.isNaN(nilai)) {
-        return "-";
+      const angka = angkaAtauNull(nilai);
+      return angka === null ? "-" : angka.toFixed(desimal);
+    }
+
+    function formatUptime(detikTotal) {
+      const detik = angkaAtauNull(detikTotal);
+      if (detik === null) return "-";
+      const dua = function (n) { return String(n).padStart(2, "0"); };
+      return dua(Math.floor(detik / 3600)) + ":" + dua(Math.floor((detik % 3600) / 60)) + ":" + dua(detik % 60);
+    }
+
+    function kelasStatus(teks) {
+      if (teks === "Normal") return "ok";
+      if (teks === "Boros Ringan") return "warn";
+      if (teks === "Boros Parah") return "bad";
+      return "";
+    }
+
+    function isiTag(elemen, teks, kelas) {
+      elemen.className = "tag" + (kelas ? " " + kelas : "");
+      elemen.textContent = teks || "-";
+    }
+
+    function aturDot(id, kelas) {
+      $(id).className = "dot " + kelas;
+    }
+
+    function dataTersedia() {
+      return telemetri !== null;
+    }
+
+    function bolehKontrolSekarang() {
+      return BOLEH_KONTROL && brokerTersambung && perangkatOnline;
+    }
+
+    // =======================================================================
+    // MINI CHART (SVG) UNTUK KARTU STATISTIK
+    // =======================================================================
+    function buatSparkline(daftarNilai, warna, idGradien) {
+      const data = daftarNilai.filter(function (v) { return typeof v === "number"; });
+      const lebar = 200;
+      const tinggi = 64;
+      const pinggir = 6;
+
+      if (data.length < 2) {
+        return '<svg viewBox="0 0 ' + lebar + ' ' + tinggi + '" preserveAspectRatio="none">' +
+               '<line x1="0" y1="50" x2="' + lebar + '" y2="50" stroke="' + warna + '" stroke-opacity="0.35" ' +
+               'stroke-width="2" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/></svg>';
       }
-      return Number(nilai).toFixed(desimal);
-    }
 
-    function isiTeks(id, teks) {
-      document.getElementById(id).textContent = teks;
-    }
+      let nilaiMin = Math.min.apply(null, data);
+      let nilaiMaks = Math.max.apply(null, data);
+      if (nilaiMaks === nilaiMin) nilaiMaks = nilaiMin + 1;
 
-    function aturGelangStatus(id, teksStatus) {
-      const el = document.getElementById(id);
-      el.textContent = teksStatus || "-";
-      el.className = "gelang";
-
-      if (teksStatus === "Normal") el.classList.add("normal");
-      if (teksStatus === "Boros Ringan") el.classList.add("ringan");
-      if (teksStatus === "Boros Parah") el.classList.add("parah");
-    }
-
-    function aturGelangOkupansi(id, teksOkupansi) {
-      const el = document.getElementById(id);
-      el.textContent = teksOkupansi || "-";
-      el.className = "gelang";
-
-      if (teksOkupansi === "Terisi") el.classList.add("normal");
-    }
-
-    function perbaruiLencana() {
-      elemen.lencanaBroker.className = "lencana " + (brokerTersambung ? "baik" : "waspada");
-      elemen.lencanaBroker.textContent = brokerTersambung ? "Broker: tersambung" : "Broker: menghubungkan";
-
-      elemen.lencanaPerangkat.className = "lencana " + (perangkatOnline ? "baik" : "buruk");
-      elemen.lencanaPerangkat.textContent = perangkatOnline ? "ESP32: online" : "ESP32: offline";
-    }
-
-    function perbaruiSaklar() {
-      const bolehKontrol = brokerTersambung && perangkatOnline;
-
-      saklarRelay.forEach(function (tombol, indeks) {
-        tombol.setAttribute("aria-checked", statusRelay[indeks] ? "true" : "false");
-        tombol.disabled = !bolehKontrol;
+      let garis = "";
+      data.forEach(function (nilai, indeks) {
+        const x = (indeks / (data.length - 1)) * lebar;
+        const y = pinggir + (1 - (nilai - nilaiMin) / (nilaiMaks - nilaiMin)) * (tinggi - pinggir * 2);
+        garis += (indeks === 0 ? "M " : " L ") + x.toFixed(1) + " " + y.toFixed(1);
       });
+      const area = garis + " L " + lebar + " " + tinggi + " L 0 " + tinggi + " Z";
 
-      if (!brokerTersambung) {
-        elemen.peringatanKontrol.textContent = "Belum tersambung ke broker, kontrol dinonaktifkan.";
-        elemen.peringatanKontrol.hidden = false;
-      } else if (!perangkatOnline) {
-        elemen.peringatanKontrol.textContent = "ESP32 sedang offline, kontrol dinonaktifkan.";
-        elemen.peringatanKontrol.hidden = false;
-      } else {
-        elemen.peringatanKontrol.hidden = true;
-      }
+      return '<svg viewBox="0 0 ' + lebar + ' ' + tinggi + '" preserveAspectRatio="none">' +
+             '<defs><linearGradient id="' + idGradien + '" x1="0" y1="0" x2="0" y2="1">' +
+             '<stop offset="0%" stop-color="' + warna + '" stop-opacity="0.28"/>' +
+             '<stop offset="100%" stop-color="' + warna + '" stop-opacity="0"/></linearGradient></defs>' +
+             '<path d="' + area + '" fill="url(#' + idGradien + ')"/>' +
+             '<path d="' + garis + '" fill="none" stroke="' + warna + '" stroke-width="2.5" ' +
+             'stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>';
     }
 
-    function perbaruiTeksUpdate() {
+    // =======================================================================
+    // RENDER: TOPBAR DAN KARTU STATISTIK
+    // =======================================================================
+    function renderTopbar() {
+      aturDot("dot-broker", brokerTersambung ? "ok" : "bad");
+      $("teks-broker").textContent = brokerTersambung ? "Broker: tersambung" : "Broker: terputus";
+
+      aturDot("dot-esp", perangkatOnline ? "ok" : "bad");
+      $("teks-esp").textContent = perangkatOnline ? "ESP32: online" : "ESP32: offline";
+    }
+
+    function renderTeksUpdate() {
+      const elemen = $("teks-update");
+      elemen.classList.remove("usang");
+
       if (waktuTelemetriTerakhir === null) {
-        elemen.teksUpdate.textContent = "belum ada data";
+        elemen.textContent = dataDariRetained
+          ? "Menampilkan data lama dari broker, menunggu data baru"
+          : "Belum ada data";
         return;
       }
 
       const selisihDetik = Math.round((Date.now() - waktuTelemetriTerakhir) / 1000);
-      const usang = selisihDetik > BATAS_DATA_USANG_DETIK;
-      elemen.teksUpdate.textContent = "update " + selisihDetik + " detik lalu" + (usang ? " (data lama)" : "");
+      if (selisihDetik > BATAS_DATA_USANG_DETIK) {
+        elemen.textContent = "Update " + selisihDetik + " detik lalu (data lama)";
+        elemen.classList.add("usang");
+      } else {
+        elemen.textContent = "Update " + selisihDetik + " detik lalu";
+      }
     }
 
-    function buatDaftarBeban() {
-      DAFTAR_BEBAN.forEach(function (beban, indeks) {
-        const baris = document.createElement("div");
-        baris.className = "beban";
+    function renderStatistik() {
+      const t = telemetri || {};
+      const daya1 = angkaAtauNull(t.daya1);
+      const daya2 = angkaAtauNull(t.daya2);
+      const energi1 = angkaAtauNull(t.energi1);
+      const energi2 = angkaAtauNull(t.energi2);
 
-        const info = document.createElement("div");
-        info.innerHTML = '<div class="nama"></div><div class="ket"></div>';
-        info.querySelector(".nama").textContent = beban.nama;
-        info.querySelector(".ket").textContent = beban.keterangan;
+      // --- Kartu 1: daya total ---
+      const totalDaya = (daya1 === null && daya2 === null) ? null : (daya1 || 0) + (daya2 || 0);
+      $("total-daya").textContent = formatAngka(totalDaya, 2);
+
+      const elemenDelta = $("total-delta");
+      elemenDelta.className = "delta";
+      if (riwayat.length >= 2) {
+        const sebelum = riwayat[riwayat.length - 2].total;
+        const sekarang = riwayat[riwayat.length - 1].total;
+        const selisih = sekarang - sebelum;
+        if (Math.abs(selisih) < 0.005) {
+          elemenDelta.textContent = "Stabil dari data sebelumnya";
+        } else if (selisih > 0) {
+          elemenDelta.textContent = "↑ " + selisih.toFixed(2) + " W dari data sebelumnya";
+          elemenDelta.classList.add("naik");
+        } else {
+          elemenDelta.textContent = "↓ " + Math.abs(selisih).toFixed(2) + " W dari data sebelumnya";
+          elemenDelta.classList.add("turun");
+        }
+      } else {
+        elemenDelta.textContent = "";
+      }
+      $("spark-daya").innerHTML = buatSparkline(riwayat.map(function (r) { return r.total; }), WARNA_UNGU, "grad-daya");
+
+      // --- Kartu 2: energi ---
+      const totalEnergi = (energi1 === null && energi2 === null) ? null : (energi1 || 0) + (energi2 || 0);
+      $("total-energi").textContent = formatAngka(totalEnergi, 4);
+      $("energi-teks-1").textContent = formatAngka(energi1, 4) + " Wh";
+      $("energi-teks-2").textContent = formatAngka(energi2, 4) + " Wh";
+
+      const jumlah = (energi1 || 0) + (energi2 || 0);
+      $("batang-1").style.width = (jumlah > 0 ? ((energi1 || 0) / jumlah) * 100 : 0) + "%";
+      $("batang-2").style.width = (jumlah > 0 ? ((energi2 || 0) / jumlah) * 100 : 0) + "%";
+
+      // --- Kartu 3: suhu ---
+      $("stat-suhu").textContent = formatAngka(t.suhu, 1);
+      $("stat-lembap").textContent = "Kelembapan " + formatAngka(t.kelembapan, 1) + " %";
+      $("spark-suhu").innerHTML = buatSparkline(riwayat.map(function (r) { return r.suhu; }), "#f08a24", "grad-suhu");
+
+      // --- Kartu 4: status ruangan ---
+      isiTag($("mini-status-1"), t.status1, kelasStatus(t.status1));
+      isiTag($("mini-status-2"), t.status2, kelasStatus(t.status2));
+      $("mini-okupansi-1").textContent = t.okupansi1 ? "Okupansi: " + t.okupansi1 : "Okupansi: -";
+      $("mini-okupansi-2").textContent = t.okupansi2 ? "Okupansi: " + t.okupansi2 : "Okupansi: -";
+      $("mini-uptime").textContent = formatUptime(t.uptime);
+    }
+
+    // =======================================================================
+    // RENDER: DAFTAR AREA DAN PANEL DETAIL
+    // =======================================================================
+    function ambilRingkasanArea(area) {
+      const t = telemetri || {};
+      if (area.id === "ruang1") {
+        return { status: t.status1, sub: t.okupansi1 ? t.okupansi1 : "-", nilai: formatAngka(t.daya1, 2) + " W" };
+      }
+      if (area.id === "ruang2") {
+        return { status: t.status2, sub: t.okupansi2 ? t.okupansi2 : "-", nilai: formatAngka(t.daya2, 2) + " W" };
+      }
+      return { status: null, sub: "Suhu & kelembapan", nilai: formatAngka(t.suhu, 1) + " °C" };
+    }
+
+    function renderDaftarArea() {
+      const wadah = $("daftar-area");
+      wadah.innerHTML = "";
+
+      DAFTAR_AREA.forEach(function (area) {
+        const ringkasan = ambilRingkasanArea(area);
 
         const tombol = document.createElement("button");
-        tombol.className = "saklar";
-        tombol.setAttribute("role", "switch");
-        tombol.setAttribute("aria-label", beban.nama);
-        tombol.setAttribute("aria-checked", "false");
-        tombol.disabled = true;
+        tombol.type = "button";
+        tombol.className = "area-item";
+        tombol.setAttribute("aria-pressed", area.id === areaTerpilih ? "true" : "false");
         tombol.addEventListener("click", function () {
-          kirimPerintahRelay(indeks, !statusRelay[indeks]);
+          areaTerpilih = area.id;
+          renderDaftarArea();
+          renderDetail();
         });
 
-        saklarRelay.push(tombol);
-        baris.appendChild(info);
-        baris.appendChild(tombol);
-        elemen.daftarBeban.appendChild(baris);
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.textContent = area.inisial;
+
+        const info = document.createElement("div");
+        info.className = "area-info";
+        const nama = document.createElement("div");
+        nama.className = "area-nama";
+        nama.textContent = area.nama;
+        const sub = document.createElement("div");
+        sub.className = "area-sub";
+        sub.textContent = ringkasan.sub;
+        info.appendChild(nama);
+        info.appendChild(sub);
+
+        const kanan = document.createElement("div");
+        kanan.className = "area-kanan";
+        if (ringkasan.status) {
+          const tag = document.createElement("div");
+          tag.className = "tag " + kelasStatus(ringkasan.status);
+          tag.textContent = ringkasan.status;
+          kanan.appendChild(tag);
+        }
+        const nilai = document.createElement("div");
+        nilai.className = "area-nilai";
+        nilai.textContent = ringkasan.nilai;
+        kanan.appendChild(nilai);
+
+        tombol.appendChild(avatar);
+        tombol.appendChild(info);
+        tombol.appendChild(kanan);
+        wadah.appendChild(tombol);
       });
     }
 
-    // =======================================================================
-    // GRAFIK (digambar manual di canvas, tanpa library)
-    // =======================================================================
-    function ambilWarnaCss(namaVariabel) {
-      return getComputedStyle(document.documentElement).getPropertyValue(namaVariabel).trim();
+    // Satu tile = kotak kecil di panel detail. Ada dua jenis:
+    //   - tile angka  : { label, nilai, satuan, sub }
+    //   - tile beban  : { label, indeksRelay, sub }  (punya saklar)
+    function buatDaftarTile(areaId) {
+      const t = telemetri || {};
+
+      function tileBeban(indeks) {
+        return { label: NAMA_BEBAN[indeks], indeksRelay: indeks, sub: "Relay " + (indeks + 1) };
+      }
+
+      if (areaId === "ruang1") {
+        return [
+          { label: "Daya", nilai: formatAngka(t.daya1, 2), satuan: "W", sub: "Termasuk Kipas Koridor" },
+          { label: "Energi", nilai: formatAngka(t.energi1, 4), satuan: "Wh", sub: "Sejak ESP32 menyala" },
+          tileBeban(0),
+          tileBeban(1)
+        ];
+      }
+
+      if (areaId === "ruang2") {
+        return [
+          { label: "Daya", nilai: formatAngka(t.daya2, 2), satuan: "W", sub: "Kipas + Lampu Ruang 2" },
+          { label: "Energi", nilai: formatAngka(t.energi2, 4), satuan: "Wh", sub: "Sejak ESP32 menyala" },
+          tileBeban(2),
+          tileBeban(3)
+        ];
+      }
+
+      return [
+        { label: "Suhu", nilai: formatAngka(t.suhu, 1), satuan: "°C", sub: "Sensor DHT11" },
+        { label: "Kelembapan", nilai: formatAngka(t.kelembapan, 1), satuan: "%", sub: "Sensor DHT11" },
+        tileBeban(1),
+        { label: "Uptime ESP32", nilai: formatUptime(t.uptime), satuan: "", sub: "Sejak menyala" }
+      ];
     }
 
+    function renderDetail() {
+      const area = DAFTAR_AREA.find(function (a) { return a.id === areaTerpilih; });
+      const t = telemetri || {};
+      const adalahRuangan = (area.id === "ruang1" || area.id === "ruang2");
+      const bolehKontrol = bolehKontrolSekarang();
+
+      // --- bagian atas ---
+      $("detail-nama").textContent = area.nama;
+      $("detail-sensor").textContent = area.sensor;
+
+      const statusArea = area.id === "ruang1" ? t.status1 : (area.id === "ruang2" ? t.status2 : null);
+      const tagDetail = $("detail-tag");
+      if (adalahRuangan) {
+        tagDetail.style.display = "";
+        tagDetail.textContent = statusArea || "-";
+      } else {
+        tagDetail.style.display = "none";
+      }
+
+      // --- tile ---
+      const wadahTile = $("tile-grid");
+      wadahTile.innerHTML = "";
+
+      buatDaftarTile(area.id).forEach(function (tile) {
+        const kotak = document.createElement("div");
+        kotak.className = "tile";
+
+        const label = document.createElement("div");
+        label.className = "tile-label";
+        label.textContent = tile.label;
+        kotak.appendChild(label);
+
+        if (tile.indeksRelay === undefined) {
+          const nilai = document.createElement("div");
+          nilai.className = "tile-nilai";
+          nilai.textContent = tile.nilai;
+          if (tile.satuan) {
+            const satuan = document.createElement("small");
+            satuan.textContent = tile.satuan;
+            nilai.appendChild(satuan);
+          }
+          kotak.appendChild(nilai);
+        } else {
+          const nyala = statusRelay[tile.indeksRelay];
+          const baris = document.createElement("div");
+          baris.className = "tile-baris";
+
+          const nilai = document.createElement("div");
+          nilai.className = "tile-nilai";
+          nilai.style.marginTop = "0";
+          nilai.textContent = nyala ? "ON" : "OFF";
+
+          const saklar = document.createElement("button");
+          saklar.type = "button";
+          saklar.className = "saklar";
+          saklar.setAttribute("role", "switch");
+          saklar.setAttribute("aria-label", tile.label);
+          saklar.setAttribute("aria-checked", nyala ? "true" : "false");
+          saklar.disabled = !bolehKontrol;
+          saklar.addEventListener("click", function () {
+            kirimRelay(tile.indeksRelay, !statusRelay[tile.indeksRelay]);
+          });
+
+          baris.appendChild(nilai);
+          baris.appendChild(saklar);
+          kotak.appendChild(baris);
+        }
+
+        const sub = document.createElement("div");
+        sub.className = "tile-sub";
+        sub.textContent = tile.sub;
+        kotak.appendChild(sub);
+
+        wadahTile.appendChild(kotak);
+      });
+
+      // --- bagian bawah ---
+      if (adalahRuangan) {
+        $("bawah-label-1").textContent = "Okupansi";
+        $("bawah-nilai-1").textContent = (area.id === "ruang1" ? t.okupansi1 : t.okupansi2) || "-";
+        $("bawah-label-2").textContent = "Status pemborosan";
+        $("bawah-nilai-2").textContent = statusArea || "-";
+      } else {
+        $("bawah-label-1").textContent = "Pesan diterima";
+        $("bawah-nilai-1").textContent = String(jumlahPesan);
+        $("bawah-label-2").textContent = "Kelembapan";
+        $("bawah-nilai-2").textContent = formatAngka(t.kelembapan, 1) + " %";
+      }
+
+      const tombolMatikan = $("btn-matikan");
+      tombolMatikan.disabled = !bolehKontrol;
+      tombolMatikan.textContent = area.id === "koridor" ? "Matikan kipas" : "Matikan semua beban";
+
+      renderCatatan();
+    }
+
+    function daftarRelayArea(areaId) {
+      if (areaId === "ruang1") return [0, 1];
+      if (areaId === "ruang2") return [2, 3];
+      return [1];
+    }
+
+    function renderCatatan() {
+      const elemen = $("catatan");
+      const pesanMasihBerlaku = pesanKontrol && (Date.now() - waktuPesanKontrol) < 5000;
+
+      if (!BOLEH_KONTROL) {
+        elemen.textContent = "Mode hanya lihat: kontrol beban dinonaktifkan.";
+      } else if (pesanMasihBerlaku) {
+        elemen.textContent = pesanKontrol;
+      } else if (!brokerTersambung) {
+        elemen.textContent = "Belum tersambung ke broker, kontrol dinonaktifkan.";
+      } else if (!perangkatOnline) {
+        elemen.textContent = "ESP32 sedang offline, kontrol dinonaktifkan.";
+      } else {
+        elemen.textContent = "";
+      }
+    }
+
+    // =======================================================================
+    // RENDER: GRAFIK UTAMA (CANVAS)
+    // =======================================================================
     function gambarGrafik() {
-      const kanvas = elemen.grafik;
-      const rasioPiksel = window.devicePixelRatio || 1;
+      const kanvas = $("grafik");
+      const rasio = window.devicePixelRatio || 1;
       const lebar = kanvas.clientWidth;
       const tinggi = kanvas.clientHeight;
 
-      kanvas.width = lebar * rasioPiksel;
-      kanvas.height = tinggi * rasioPiksel;
+      kanvas.width = lebar * rasio;
+      kanvas.height = tinggi * rasio;
 
       const ctx = kanvas.getContext("2d");
-      ctx.setTransform(rasioPiksel, 0, 0, rasioPiksel, 0, 0);
+      ctx.setTransform(rasio, 0, 0, rasio, 0, 0);
       ctx.clearRect(0, 0, lebar, tinggi);
 
-      const margin = { kiri: 40, kanan: 10, atas: 10, bawah: 22 };
+      const margin = { kiri: 42, kanan: 12, atas: 12, bawah: 26 };
       const lebarPlot = lebar - margin.kiri - margin.kanan;
       const tinggiPlot = tinggi - margin.atas - margin.bawah;
 
-      const warnaGaris = ambilWarnaCss("--garis");
-      const warnaTeks = ambilWarnaCss("--teks-redup");
+      ctx.font = "11px 'Plus Jakarta Sans', system-ui, sans-serif";
 
-      // Cari nilai maksimum supaya skala sumbu Y menyesuaikan data
+      if (riwayat.length < 2) {
+        ctx.fillStyle = "#7a7994";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("Menunggu data dari ESP32...", lebar / 2, tinggi / 2);
+        return;
+      }
+
       let nilaiMaks = 1;
-      riwayatDaya.forEach(function (titik) {
+      riwayat.forEach(function (titik) {
         if (titik.daya1 !== null) nilaiMaks = Math.max(nilaiMaks, titik.daya1);
         if (titik.daya2 !== null) nilaiMaks = Math.max(nilaiMaks, titik.daya2);
       });
       nilaiMaks = Math.ceil(nilaiMaks * 1.15);
 
-      // Garis bantu horizontal dan label sumbu Y
-      ctx.font = "11px system-ui, sans-serif";
-      ctx.fillStyle = warnaTeks;
-      ctx.strokeStyle = warnaGaris;
+      // garis bantu dan label sumbu Y
+      ctx.strokeStyle = "#ebeaf4";
+      ctx.fillStyle = "#7a7994";
       ctx.lineWidth = 1;
       ctx.textAlign = "right";
       ctx.textBaseline = "middle";
-
-      const jumlahGarisBantu = 4;
-      for (let i = 0; i <= jumlahGarisBantu; i++) {
-        const nilai = (nilaiMaks / jumlahGarisBantu) * i;
+      for (let i = 0; i <= 4; i++) {
+        const nilai = (nilaiMaks / 4) * i;
         const y = margin.atas + tinggiPlot - (nilai / nilaiMaks) * tinggiPlot;
-
         ctx.beginPath();
         ctx.moveTo(margin.kiri, y);
         ctx.lineTo(margin.kiri + lebarPlot, y);
         ctx.stroke();
-        ctx.fillText(nilai.toFixed(1), margin.kiri - 6, y);
+        ctx.fillText(nilai.toFixed(1) + " W", margin.kiri - 6, y);
       }
 
-      ctx.textAlign = "left";
       ctx.textBaseline = "top";
-      ctx.fillText("W", 4, 2);
-      ctx.textAlign = "center";
-      ctx.fillText("5 menit lalu", margin.kiri + 30, tinggi - 14);
-      ctx.fillText("sekarang", margin.kiri + lebarPlot - 24, tinggi - 14);
+      ctx.textAlign = "left";
+      ctx.fillText("5 menit lalu", margin.kiri, tinggi - 16);
+      ctx.textAlign = "right";
+      ctx.fillText("sekarang", margin.kiri + lebarPlot, tinggi - 16);
 
-      if (riwayatDaya.length < 2) {
-        ctx.fillStyle = warnaTeks;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("Menunggu data...", margin.kiri + lebarPlot / 2, margin.atas + tinggiPlot / 2);
-        return;
-      }
+      // posisi x: titik terbaru selalu di kanan
+      const jarakX = lebarPlot / (JUMLAH_TITIK_GRAFIK - 1);
+      const geser = (JUMLAH_TITIK_GRAFIK - riwayat.length) * jarakX;
 
-      function gambarSeri(namaField, warna) {
-        ctx.strokeStyle = warna;
-        ctx.lineWidth = 2;
-        ctx.lineJoin = "round";
-        ctx.beginPath();
-
-        let sudahMulai = false;
-        riwayatDaya.forEach(function (titik, indeks) {
+      function gambarSeri(namaField, warna, warnaIsi) {
+        const titikGambar = [];
+        riwayat.forEach(function (titik, indeks) {
           const nilai = titik[namaField];
           if (nilai === null) return;
-
-          const x = margin.kiri + (indeks / (JUMLAH_TITIK_GRAFIK - 1)) * lebarPlot
-                    + (JUMLAH_TITIK_GRAFIK - riwayatDaya.length) * (lebarPlot / (JUMLAH_TITIK_GRAFIK - 1));
-          const y = margin.atas + tinggiPlot - (nilai / nilaiMaks) * tinggiPlot;
-
-          if (!sudahMulai) {
-            ctx.moveTo(x, y);
-            sudahMulai = true;
-          } else {
-            ctx.lineTo(x, y);
-          }
+          titikGambar.push({
+            x: margin.kiri + geser + indeks * jarakX,
+            y: margin.atas + tinggiPlot - (nilai / nilaiMaks) * tinggiPlot
+          });
         });
+        if (titikGambar.length < 2) return;
 
+        // isi di bawah garis
+        const dasar = margin.atas + tinggiPlot;
+        const gradien = ctx.createLinearGradient(0, margin.atas, 0, dasar);
+        gradien.addColorStop(0, warnaIsi);
+        gradien.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.beginPath();
+        ctx.moveTo(titikGambar[0].x, dasar);
+        titikGambar.forEach(function (p) { ctx.lineTo(p.x, p.y); });
+        ctx.lineTo(titikGambar[titikGambar.length - 1].x, dasar);
+        ctx.closePath();
+        ctx.fillStyle = gradien;
+        ctx.fill();
+
+        // garis
+        ctx.beginPath();
+        titikGambar.forEach(function (p, i) {
+          if (i === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        });
+        ctx.strokeStyle = warna;
+        ctx.lineWidth = 2.5;
+        ctx.lineJoin = "round";
         ctx.stroke();
       }
 
-      gambarSeri("daya1", ambilWarnaCss("--garis-ruang-1"));
-      gambarSeri("daya2", ambilWarnaCss("--garis-ruang-2"));
+      gambarSeri("daya1", WARNA_UNGU, "rgba(91,76,240,0.22)");
+      gambarSeri("daya2", WARNA_TEAL, "rgba(18,181,166,0.20)");
+    }
+
+    // =======================================================================
+    // RENDER SEMUA
+    // =======================================================================
+    function renderSemua() {
+      renderTopbar();
+      renderTeksUpdate();
+      renderStatistik();
+      renderDaftarArea();
+      renderDetail();
+      gambarGrafik();
     }
 
     // =======================================================================
     // DATA MASUK DARI MQTT
     // =======================================================================
-    function terapkanTelemetri(data) {
-      isiTeks("daya1", formatAngka(data.daya1, 2));
-      isiTeks("daya2", formatAngka(data.daya2, 2));
-      isiTeks("energi1", formatAngka(data.energi1, 4));
-      isiTeks("energi2", formatAngka(data.energi2, 4));
-      isiTeks("suhu", formatAngka(data.suhu, 1));
-      isiTeks("kelembapan", formatAngka(data.kelembapan, 1));
-
-      aturGelangStatus("status1", data.status1);
-      aturGelangStatus("status2", data.status2);
-      aturGelangOkupansi("okupansi1", data.okupansi1);
-      aturGelangOkupansi("okupansi2", data.okupansi2);
+    function terapkanTelemetri(data, dariRetained) {
+      telemetri = data;
+      dataDariRetained = dariRetained;
 
       if (Array.isArray(data.relay)) {
         statusRelay = data.relay.map(function (nilai) { return nilai === 1; });
       }
 
-      riwayatDaya.push({
-        daya1: typeof data.daya1 === "number" ? data.daya1 : null,
-        daya2: typeof data.daya2 === "number" ? data.daya2 : null
-      });
-      if (riwayatDaya.length > JUMLAH_TITIK_GRAFIK) {
-        riwayatDaya.shift();
+      // Pesan retained = salinan lama dari broker, bukan data baru dari ESP32.
+      // Ditampilkan, tapi tidak dihitung dan tidak masuk grafik.
+      if (!dariRetained) {
+        const daya1 = angkaAtauNull(data.daya1);
+        const daya2 = angkaAtauNull(data.daya2);
+        riwayat.push({
+          daya1: daya1,
+          daya2: daya2,
+          total: (daya1 || 0) + (daya2 || 0),
+          suhu: angkaAtauNull(data.suhu)
+        });
+        if (riwayat.length > JUMLAH_TITIK_GRAFIK) riwayat.shift();
+
+        waktuTelemetriTerakhir = Date.now();
+        jumlahPesan++;
       }
 
-      waktuTelemetriTerakhir = Date.now();
-
-      perbaruiSaklar();
-      perbaruiTeksUpdate();
-      gambarGrafik();
+      renderSemua();
     }
 
-    function saatPesanMasuk(topik, isi) {
+    function saatPesanMasuk(topik, isi, paket) {
       const teks = isi.toString();
 
       if (topik === TOPIK_STATUS) {
-        perangkatOnline = (teks === "online");
-        perbaruiLencana();
-        perbaruiSaklar();
+        perangkatOnline = (teks.trim() === "online");
+        renderSemua();
         return;
       }
 
       if (topik === TOPIK_TELEMETRI) {
         try {
-          terapkanTelemetri(JSON.parse(teks));
+          terapkanTelemetri(JSON.parse(teks), Boolean(paket && paket.retain));
         } catch (galat) {
           console.error("Telemetri tidak valid:", galat, teks);
         }
@@ -583,24 +1158,68 @@
     // =======================================================================
     // KIRIM PERINTAH
     // =======================================================================
-    let klien = null;
-
-    function kirimPerintahRelay(indeks, nyala) {
+    function kirimRelay(indeks, nyala) {
+      if (!BOLEH_KONTROL) return;
       if (!klien || !klien.connected) return;
 
       const topik = TOPIK_PERINTAH + "relay" + (indeks + 1);
-      // Tidak di-retain: supaya perintah lama tidak dijalankan lagi saat ESP32 restart
+      // retain = false: supaya perintah lama tidak dijalankan lagi saat ESP32 restart
       klien.publish(topik, nyala ? "1" : "0", { qos: 0, retain: false });
+    }
+
+    function matikanSemuaBebanArea() {
+      if (!bolehKontrolSekarang()) return;
+
+      daftarRelayArea(areaTerpilih).forEach(function (indeks) {
+        kirimRelay(indeks, false);
+      });
+      pesanKontrol = "Perintah matikan dikirim.";
+      waktuPesanKontrol = Date.now();
+      renderCatatan();
     }
 
     // =======================================================================
     // MULAI
     // =======================================================================
+    function aturNavigasi() {
+      const tautan = document.querySelectorAll("#nav a");
+      tautan.forEach(function (a) {
+        a.addEventListener("click", function (peristiwa) {
+          peristiwa.preventDefault();
+          tautan.forEach(function (lain) { lain.removeAttribute("aria-current"); });
+          a.setAttribute("aria-current", "true");
+
+          const sasaran = document.querySelector(a.getAttribute("href"));
+          if (sasaran) sasaran.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+    }
+
+    function perbaruiJam() {
+      $("jam").textContent = new Date().toLocaleTimeString("en-GB", { timeZone: TZ, hour12: false });
+    }
+
     function mulai() {
-      buatDaftarBeban();
-      perbaruiLencana();
-      perbaruiSaklar();
-      gambarGrafik();
+      document.body.classList.toggle("hanya-lihat", !BOLEH_KONTROL);
+
+      aturNavigasi();
+      $("btn-matikan").addEventListener("click", matikanSemuaBebanArea);
+      renderSemua();
+      perbaruiJam();
+
+      setInterval(perbaruiJam, 1000);
+      setInterval(function () {
+        renderTeksUpdate();
+        renderCatatan();
+      }, 1000);
+
+      window.addEventListener("resize", gambarGrafik);
+
+      if (typeof mqtt === "undefined") {
+        $("teks-broker").textContent = "Library MQTT gagal dimuat";
+        console.error("mqtt.js tidak termuat. Cek koneksi internet.");
+        return;
+      }
 
       const idKlien = "dashboard-" + Math.random().toString(16).slice(2, 10);
 
@@ -614,15 +1233,13 @@
       klien.on("connect", function () {
         brokerTersambung = true;
         klien.subscribe([TOPIK_STATUS, TOPIK_TELEMETRI]);
-        perbaruiLencana();
-        perbaruiSaklar();
+        renderSemua();
       });
 
       klien.on("close", function () {
         brokerTersambung = false;
         perangkatOnline = false;
-        perbaruiLencana();
-        perbaruiSaklar();
+        renderSemua();
       });
 
       klien.on("error", function (galat) {
@@ -630,10 +1247,6 @@
       });
 
       klien.on("message", saatPesanMasuk);
-
-      setInterval(perbaruiTeksUpdate, 1000);
-      window.addEventListener("resize", gambarGrafik);
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", gambarGrafik);
     }
 
     mulai();
