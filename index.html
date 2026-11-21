@@ -447,7 +447,7 @@
     <div class="judul-baris">
       <div>
         <h1>Monitoring</h1>
-        <p class="sub">Pantau daya, okupansi, dan kontrol beban ruangan secara realtime.</p>
+        <p class="sub">Pantau tegangan, arus, okupansi, dan kontrol beban ruangan secara realtime.</p>
       </div>
       <div class="update-info" id="teks-update">Belum ada data</div>
     </div>
@@ -456,21 +456,21 @@
     <section class="stat-grid" id="bagian-ringkasan" aria-label="Ringkasan">
 
       <article class="kartu">
-        <div class="kartu-judul"><span>Daya total</span><span class="ikon-bulat" aria-hidden="true">&#9889;</span></div>
-        <div class="angka"><span id="total-daya">-</span><small>W</small></div>
+        <div class="kartu-judul"><span>Arus total</span><span class="ikon-bulat" aria-hidden="true">&#9889;</span></div>
+        <div class="angka"><span id="total-arus">-</span><small>mA</small></div>
         <div class="delta" id="total-delta"></div>
-        <div class="spark" id="spark-daya"></div>
+        <div class="spark" id="spark-arus"></div>
       </article>
 
       <article class="kartu">
-        <div class="kartu-judul"><span>Energi terpakai</span><span class="ikon-bulat" aria-hidden="true">&#9719;</span></div>
-        <div class="angka"><span id="total-energi">-</span><small>Wh</small></div>
+        <div class="kartu-judul"><span>Tegangan beban</span><span class="ikon-bulat" aria-hidden="true">&#9719;</span></div>
+        <div class="angka"><span id="rata-tegangan">-</span><small>V</small></div>
         <div class="batang-baris">
-          <div class="label-baris"><span>Ruang 1</span><span id="energi-teks-1">-</span></div>
+          <div class="label-baris"><span>Ruang 1</span><span id="tegangan-teks-1">-</span></div>
           <div class="batang-jalur"><div class="batang-isi" id="batang-1" style="width:0%; background: var(--ungu)"></div></div>
         </div>
         <div class="batang-baris">
-          <div class="label-baris"><span>Ruang 2</span><span id="energi-teks-2">-</span></div>
+          <div class="label-baris"><span>Ruang 2</span><span id="tegangan-teks-2">-</span></div>
           <div class="batang-jalur"><div class="batang-isi" id="batang-2" style="width:0%; background: var(--teal)"></div></div>
         </div>
       </article>
@@ -538,15 +538,15 @@
     </section>
 
     <!-- ===================== GRAFIK ===================== -->
-    <section class="grafik-kartu" id="bagian-grafik" aria-label="Grafik daya">
+    <section class="grafik-kartu" id="bagian-grafik" aria-label="Grafik arus">
       <div class="grafik-kepala">
-        <h2>Tren daya 5 menit terakhir</h2>
+        <h2>Tren arus 5 menit terakhir</h2>
         <div class="legenda">
           <span style="--warna: var(--ungu)">Ruang 1</span>
           <span style="--warna: var(--teal)">Ruang 2</span>
         </div>
       </div>
-      <canvas id="grafik" aria-label="Grafik daya Ruang 1 dan Ruang 2"></canvas>
+      <canvas id="grafik" aria-label="Grafik arus Ruang 1 dan Ruang 2"></canvas>
     </section>
 
     <footer>Data realtime dari ESP32 lewat MQTT (HiveMQ) &middot; WIB (UTC+7)</footer>
@@ -572,6 +572,7 @@
     const JUMLAH_TITIK_GRAFIK = 60;      // 60 titik x 5 detik = 5 menit
     const BATAS_DATA_USANG_DETIK = 20;
     const TZ = "Asia/Jakarta";
+    const TEGANGAN_ACUAN_MAKS = 5.0;     // Skala maksimal progress bar tegangan (V)
 
     // Urutan sama dengan relay 1..4 di firmware
     const NAMA_BEBAN = ["Lampu Ruang 1", "Kipas Koridor", "Kipas Ruang 2", "Lampu Ruang 2"];
@@ -579,7 +580,7 @@
     const WARNA_UNGU = "#5b4cf0";
     const WARNA_TEAL = "#12b5a6";
 
-    // Daftar area di panel gelap. relayBeban = nomor indeks relay di area itu.
+    // Daftar area di panel gelap.
     const DAFTAR_AREA = [
       { id: "ruang1",  nama: "Ruang 1", inisial: "R1", sensor: "INA219 0x40 + PIR 1" },
       { id: "ruang2",  nama: "Ruang 2", inisial: "R2", sensor: "INA219 0x41 + PIR 2" },
@@ -596,8 +597,7 @@
     let waktuTelemetriTerakhir = null;
     let jumlahPesan = 0;
     let statusRelay = [false, false, false, false];
-    let riwayat = [];                   // { daya1, daya2, total, suhu }
-    let totalSebelumnya = null;
+    let riwayat = [];                   // { arus1, arus2, totalArus, suhu }
     let areaTerpilih = "ruang1";
     let pesanKontrol = "";
     let waktuPesanKontrol = 0;
@@ -638,10 +638,6 @@
 
     function aturDot(id, kelas) {
       $(id).className = "dot " + kelas;
-    }
-
-    function dataTersedia() {
-      return telemetri !== null;
     }
 
     function bolehKontrolSekarang() {
@@ -717,44 +713,52 @@
 
     function renderStatistik() {
       const t = telemetri || {};
-      const daya1 = angkaAtauNull(t.daya1);
-      const daya2 = angkaAtauNull(t.daya2);
-      const energi1 = angkaAtauNull(t.energi1);
-      const energi2 = angkaAtauNull(t.energi2);
+      const arus1 = angkaAtauNull(t.arus1);
+      const arus2 = angkaAtauNull(t.arus2);
+      const tegangan1 = angkaAtauNull(t.tegangan1);
+      const tegangan2 = angkaAtauNull(t.tegangan2);
 
-      // --- Kartu 1: daya total ---
-      const totalDaya = (daya1 === null && daya2 === null) ? null : (daya1 || 0) + (daya2 || 0);
-      $("total-daya").textContent = formatAngka(totalDaya, 2);
+      // --- Kartu 1: arus total ---
+      const totalArus = (arus1 === null && arus2 === null) ? null : (arus1 || 0) + (arus2 || 0);
+      $("total-arus").textContent = formatAngka(totalArus, 1);
 
       const elemenDelta = $("total-delta");
       elemenDelta.className = "delta";
       if (riwayat.length >= 2) {
-        const sebelum = riwayat[riwayat.length - 2].total;
-        const sekarang = riwayat[riwayat.length - 1].total;
+        const sebelum = riwayat[riwayat.length - 2].totalArus;
+        const sekarang = riwayat[riwayat.length - 1].totalArus;
         const selisih = sekarang - sebelum;
-        if (Math.abs(selisih) < 0.005) {
+        if (Math.abs(selisih) < 0.5) {
           elemenDelta.textContent = "Stabil dari data sebelumnya";
         } else if (selisih > 0) {
-          elemenDelta.textContent = "↑ " + selisih.toFixed(2) + " W dari data sebelumnya";
+          elemenDelta.textContent = "↑ " + selisih.toFixed(1) + " mA dari data sebelumnya";
           elemenDelta.classList.add("naik");
         } else {
-          elemenDelta.textContent = "↓ " + Math.abs(selisih).toFixed(2) + " W dari data sebelumnya";
+          elemenDelta.textContent = "↓ " + Math.abs(selisih).toFixed(1) + " mA dari data sebelumnya";
           elemenDelta.classList.add("turun");
         }
       } else {
         elemenDelta.textContent = "";
       }
-      $("spark-daya").innerHTML = buatSparkline(riwayat.map(function (r) { return r.total; }), WARNA_UNGU, "grad-daya");
+      $("spark-arus").innerHTML = buatSparkline(riwayat.map(function (r) { return r.totalArus; }), WARNA_UNGU, "grad-arus");
 
-      // --- Kartu 2: energi ---
-      const totalEnergi = (energi1 === null && energi2 === null) ? null : (energi1 || 0) + (energi2 || 0);
-      $("total-energi").textContent = formatAngka(totalEnergi, 4);
-      $("energi-teks-1").textContent = formatAngka(energi1, 4) + " Wh";
-      $("energi-teks-2").textContent = formatAngka(energi2, 4) + " Wh";
+      // --- Kartu 2: tegangan beban ---
+      let rataTegangan = null;
+      if (tegangan1 !== null && tegangan2 !== null) {
+        rataTegangan = (tegangan1 + tegangan2) / 2;
+      } else if (tegangan1 !== null) {
+        rataTegangan = tegangan1;
+      } else if (tegangan2 !== null) {
+        rataTegangan = tegangan2;
+      }
+      $("rata-tegangan").textContent = formatAngka(rataTegangan, 2);
+      $("tegangan-teks-1").textContent = formatAngka(tegangan1, 2) + " V";
+      $("tegangan-teks-2").textContent = formatAngka(tegangan2, 2) + " V";
 
-      const jumlah = (energi1 || 0) + (energi2 || 0);
-      $("batang-1").style.width = (jumlah > 0 ? ((energi1 || 0) / jumlah) * 100 : 0) + "%";
-      $("batang-2").style.width = (jumlah > 0 ? ((energi2 || 0) / jumlah) * 100 : 0) + "%";
+      const persenV1 = tegangan1 !== null ? Math.min(100, Math.max(0, (tegangan1 / TEGANGAN_ACUAN_MAKS) * 100)) : 0;
+      const persenV2 = tegangan2 !== null ? Math.min(100, Math.max(0, (tegangan2 / TEGANGAN_ACUAN_MAKS) * 100)) : 0;
+      $("batang-1").style.width = persenV1 + "%";
+      $("batang-2").style.width = persenV2 + "%";
 
       // --- Kartu 3: suhu ---
       $("stat-suhu").textContent = formatAngka(t.suhu, 1);
@@ -775,10 +779,10 @@
     function ambilRingkasanArea(area) {
       const t = telemetri || {};
       if (area.id === "ruang1") {
-        return { status: t.status1, sub: t.okupansi1 ? t.okupansi1 : "-", nilai: formatAngka(t.daya1, 2) + " W" };
+        return { status: t.status1, sub: t.okupansi1 ? t.okupansi1 : "-", nilai: formatAngka(t.arus1, 1) + " mA" };
       }
       if (area.id === "ruang2") {
-        return { status: t.status2, sub: t.okupansi2 ? t.okupansi2 : "-", nilai: formatAngka(t.daya2, 2) + " W" };
+        return { status: t.status2, sub: t.okupansi2 ? t.okupansi2 : "-", nilai: formatAngka(t.arus2, 1) + " mA" };
       }
       return { status: null, sub: "Suhu & kelembapan", nilai: formatAngka(t.suhu, 1) + " °C" };
     }
@@ -847,8 +851,8 @@
 
       if (areaId === "ruang1") {
         return [
-          { label: "Daya", nilai: formatAngka(t.daya1, 2), satuan: "W", sub: "Termasuk Kipas Koridor" },
-          { label: "Energi", nilai: formatAngka(t.energi1, 4), satuan: "Wh", sub: "Sejak ESP32 menyala" },
+          { label: "Tegangan", nilai: formatAngka(t.tegangan1, 2), satuan: "V", sub: "Sensor INA219 0x40" },
+          { label: "Arus", nilai: formatAngka(t.arus1, 1), satuan: "mA", sub: "Termasuk Kipas Koridor" },
           tileBeban(0),
           tileBeban(1)
         ];
@@ -856,8 +860,8 @@
 
       if (areaId === "ruang2") {
         return [
-          { label: "Daya", nilai: formatAngka(t.daya2, 2), satuan: "W", sub: "Kipas + Lampu Ruang 2" },
-          { label: "Energi", nilai: formatAngka(t.energi2, 4), satuan: "Wh", sub: "Sejak ESP32 menyala" },
+          { label: "Tegangan", nilai: formatAngka(t.tegangan2, 2), satuan: "V", sub: "Sensor INA219 0x41" },
+          { label: "Arus", nilai: formatAngka(t.arus2, 1), satuan: "mA", sub: "Kipas + Lampu Ruang 2" },
           tileBeban(2),
           tileBeban(3)
         ];
@@ -1006,7 +1010,7 @@
       ctx.setTransform(rasio, 0, 0, rasio, 0, 0);
       ctx.clearRect(0, 0, lebar, tinggi);
 
-      const margin = { kiri: 42, kanan: 12, atas: 12, bawah: 26 };
+      const margin = { kiri: 54, kanan: 12, atas: 12, bawah: 26 };
       const lebarPlot = lebar - margin.kiri - margin.kanan;
       const tinggiPlot = tinggi - margin.atas - margin.bawah;
 
@@ -1020,10 +1024,10 @@
         return;
       }
 
-      let nilaiMaks = 1;
+      let nilaiMaks = 10;
       riwayat.forEach(function (titik) {
-        if (titik.daya1 !== null) nilaiMaks = Math.max(nilaiMaks, titik.daya1);
-        if (titik.daya2 !== null) nilaiMaks = Math.max(nilaiMaks, titik.daya2);
+        if (titik.arus1 !== null) nilaiMaks = Math.max(nilaiMaks, titik.arus1);
+        if (titik.arus2 !== null) nilaiMaks = Math.max(nilaiMaks, titik.arus2);
       });
       nilaiMaks = Math.ceil(nilaiMaks * 1.15);
 
@@ -1040,7 +1044,7 @@
         ctx.moveTo(margin.kiri, y);
         ctx.lineTo(margin.kiri + lebarPlot, y);
         ctx.stroke();
-        ctx.fillText(nilai.toFixed(1) + " W", margin.kiri - 6, y);
+        ctx.fillText(nilai.toFixed(0) + " mA", margin.kiri - 6, y);
       }
 
       ctx.textBaseline = "top";
@@ -1090,8 +1094,8 @@
         ctx.stroke();
       }
 
-      gambarSeri("daya1", WARNA_UNGU, "rgba(91,76,240,0.22)");
-      gambarSeri("daya2", WARNA_TEAL, "rgba(18,181,166,0.20)");
+      gambarSeri("arus1", WARNA_UNGU, "rgba(91,76,240,0.22)");
+      gambarSeri("arus2", WARNA_TEAL, "rgba(18,181,166,0.20)");
     }
 
     // =======================================================================
@@ -1120,12 +1124,12 @@
       // Pesan retained = salinan lama dari broker, bukan data baru dari ESP32.
       // Ditampilkan, tapi tidak dihitung dan tidak masuk grafik.
       if (!dariRetained) {
-        const daya1 = angkaAtauNull(data.daya1);
-        const daya2 = angkaAtauNull(data.daya2);
+        const arus1 = angkaAtauNull(data.arus1);
+        const arus2 = angkaAtauNull(data.arus2);
         riwayat.push({
-          daya1: daya1,
-          daya2: daya2,
-          total: (daya1 || 0) + (daya2 || 0),
+          arus1: arus1,
+          arus2: arus2,
+          totalArus: (arus1 || 0) + (arus2 || 0),
           suhu: angkaAtauNull(data.suhu)
         });
         if (riwayat.length > JUMLAH_TITIK_GRAFIK) riwayat.shift();
